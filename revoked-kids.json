@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "revoked": [],
+  "schema_url": "https://github.com/geoclear-io/specs/blob/main/revoked-kids-schema-v1.json",
+  "comment": "Empty at time-zero. Each entry has the form { 'kid': '...', 'revoked_at': 'YYYY-MM-DDTHH:MM:SSZ', 'reason': '...' }. Receipts signed by a revoked kid are mathematically valid but MUST NOT be trusted operationally."
+}

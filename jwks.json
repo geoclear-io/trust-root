@@ -1,0 +1,13 @@
+{
+  "keys": [
+    {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "jzq5exNmxpe0Hm2fsOvVExKB1YYZq9rqnVlE8SjmGq5nFZBg4_2sUSgMNNsA0qxm",
+      "y": "ceciYANJFhsPbjt9z5HEICQmYmJNgVGxUR6sWNEROQU42mj87zHfkmBUtcUITHFl",
+      "use": "sig",
+      "alg": "ES384",
+      "kid": "geoclear-response-signing-2026"
+    }
+  ]
+}
