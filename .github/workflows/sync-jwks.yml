@@ -1,0 +1,60 @@
+# Q-744 — Trust-root sync workflow for geoclear-io/trust-root
+# 
+# COPY THIS FILE TO geoclear-io/trust-root/.github/workflows/sync-jwks.yml
+# Requires a GitHub token with `workflow` scope to push (current sriharkaur
+# token lacks it — see COMMS-XX). Once added, runs hourly + on
+# repository_dispatch from AWS rotation events.
+
+name: Sync JWKS + key-transparency manifest
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync-trust-root]
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch upstream
+        run: |
+          curl -sL https://geoclear.io/.well-known/jwks.json -o /tmp/u-jwks.json
+          curl -sL https://geoclear.io/.well-known/key-transparency-manifest.json -o /tmp/u-ktm.json
+          curl -sL https://geoclear.io/.well-known/key-transparency-manifest.sig -o /tmp/u-ktm.sig
+          curl -sL https://geoclear.io/.well-known/location-trust.json -o /tmp/u-lt.json
+          curl -sL https://geoclear.io/.well-known/location-trust.json.sig -o /tmp/u-lt.sig
+      - name: Compare hashes
+        id: diff
+        run: |
+          U_JWKS=$(sha256sum /tmp/u-jwks.json | awk '{print $1}')
+          L_JWKS=$(sha256sum jwks.json | awk '{print $1}')
+          U_KTM=$(sha256sum /tmp/u-ktm.json | awk '{print $1}')
+          L_KTM=$([ -f key-transparency-manifest.json ] && sha256sum key-transparency-manifest.json | awk '{print $1}' || echo missing)
+          U_LT=$(sha256sum /tmp/u-lt.json | awk '{print $1}')
+          L_LT=$([ -f location-trust.json ] && sha256sum location-trust.json | awk '{print $1}' || echo missing)
+          if [ "$U_JWKS" = "$L_JWKS" ] && [ "$U_KTM" = "$L_KTM" ] && [ "$U_LT" = "$L_LT" ]; then
+            echo "result=in-sync" >> $GITHUB_OUTPUT
+          else
+            echo "result=drifted" >> $GITHUB_OUTPUT
+          fi
+      - name: Verify upstream manifest signature
+        if: steps.diff.outputs.result == 'drifted'
+        run: |
+          base64 -d /tmp/u-ktm.sig > /tmp/u-ktm.sig.bin
+          openssl dgst -sha384 -verify cosign-pubkey.pem -signature /tmp/u-ktm.sig.bin /tmp/u-ktm.json
+      - name: Update + commit
+        if: steps.diff.outputs.result == 'drifted'
+        run: |
+          cp /tmp/u-jwks.json jwks.json
+          cp /tmp/u-ktm.json key-transparency-manifest.json
+          cp /tmp/u-ktm.sig key-transparency-manifest.sig
+          cp /tmp/u-lt.json location-trust.json
+          cp /tmp/u-lt.sig location-trust.json.sig
+          git config user.name "geoclear-trust-root-sync[bot]"
+          git config user.email "trust-root-sync@geoclear.io"
+          git add jwks.json key-transparency-manifest.json key-transparency-manifest.sig location-trust.json location-trust.json.sig
+          git commit -m "sync: $(date -u +%Y-%m-%dT%H:%MZ) — verified upstream manifest signature"
+          git push origin main
