@@ -3,9 +3,9 @@
 > **Public verification keys for every signed receipt issued by the GeoClear API.**
 > This repository is the canonical, append-only, vendor-independent publication of GeoClear's response-signing public keys. Anyone can verify any GeoClear receipt using only the contents of this repository — no GeoClear infrastructure required.
 
-This repository exists because the verification of a signed receipt should never depend on the issuer's continued operation. If GeoClear's website, API, AWS account, or business entity disappears, every receipt ever issued under the keys published here remains independently verifiable by anyone with a copy of the receipt and read access to GitHub (or to the corresponding IPFS publication, which mirrors this repository's contents).
+This repository exists because the verification of a signed receipt should never depend on the issuer's continued operation. If GeoClear's website, API, or business entity disappears, every receipt ever issued under the keys published here remains independently verifiable by anyone with a copy of the receipt and read access to GitHub (or to the corresponding IPFS publication, which mirrors this repository's contents).
 
-The contents of this repository are mirrored to IPFS via multiple pinning services and a self-hosted kubo node. See the published discovery manifest at [`https://geoclear.io/.well-known/trust-root.json`](https://geoclear.io/.well-known/trust-root.json) for current publication targets across all channels.
+The contents of this repository are mirrored to IPFS via multiple pinning services. See the published discovery manifest at [`https://geoclear.io/.well-known/location-trust.json`](https://geoclear.io/.well-known/location-trust.json) for current publication targets across all channels.
 
 ## What's in this repo
 
@@ -16,7 +16,7 @@ The contents of this repository are mirrored to IPFS via multiple pinning servic
 | [`history/`](history/) (future) | Append-only directory of historical JWKS publications, one per rotation, named `jwks-YYYY-MM-DD.json`. The current `jwks.json` always reflects the latest publication. |
 | [`MERKLE.md`](MERKLE.md) | Description of the Merkle anchoring scheme — each new JWKS publication references the previous publication's tree hash, preventing silent rewriting of history. |
 | [`LICENSE`](LICENSE) | MIT — these public keys + verification protocol are free for anyone to consume, fork, mirror, or republish. |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | This repository is automated. Humans should generally not push to it; rotation events propagate signed commits via a dedicated GitHub App. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | This repository is automated. Humans should generally not push to it; rotation events propagate signed commits via a dedicated automation identity. |
 
 ## How to verify a GeoClear receipt offline
 
@@ -72,7 +72,7 @@ The history is append-only. Old keys are never deleted; receipts issued under th
 
 ### Revocation
 
-Before trusting a verified receipt, also check that the receipt's `kid` is NOT in [`revoked-kids.json`](revoked-kids.json). A receipt signed by a revoked kid is mathematically valid but should not be trusted operationally — typically because the corresponding HSM has been compromised or retired.
+Before trusting a verified receipt, also check that the receipt's `kid` is NOT in [`revoked-kids.json`](revoked-kids.json). A receipt signed by a revoked kid is mathematically valid but should not be trusted operationally — typically because the corresponding signing key has been retired or compromised.
 
 ```javascript
 const revoked = await fetch('https://raw.githubusercontent.com/geoclear-io/trust-root/main/revoked-kids.json').then(r => r.json());
@@ -95,11 +95,10 @@ MIT — see [LICENSE](LICENSE). Public keys are inherently public; the verificat
 ## Related
 
 - **GeoClear API:** [https://geoclear.io](https://geoclear.io)
-- **Discovery manifest** (lists all publication channels): [https://geoclear.io/.well-known/trust-root.json](https://geoclear.io/.well-known/trust-root.json) (forthcoming — see open-source spec at [`geoclear-io/specs`](https://github.com/geoclear-io/specs))
+- **Discovery manifest** (lists all publication channels): [https://geoclear.io/.well-known/location-trust.json](https://geoclear.io/.well-known/location-trust.json)
 - **Verifier npm package:** [`@geoclear/verify-receipt`](https://www.npmjs.com/package/@geoclear/verify-receipt) (a thin wrapper around the WebCrypto verifier above)
-- **IPFS mirror** (forthcoming): pinned to multiple services + self-hosted kubo node
 - **Compliance / SOC 2 mapping:** the publication of public keys to a vendor-independent location is a control documented in GeoClear's SOC 2 program
 
 ---
 
-*This repository is part of the GeoClear Sovereign Trust Root system. Decision record: [DEC-027 + DEC-033 in geoclear/DECISIONS.md](https://geoclear.io/decisions). Architectural review: ARCH-REVIEW-2026-04-28-SOVEREIGN-TRUST-ROOT.*
+*This repository is the public-key publication for the GeoClear trust root. For commercial inquiries, see [https://geoclear.io](https://geoclear.io).*

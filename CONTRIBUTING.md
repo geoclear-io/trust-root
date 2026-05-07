@@ -1,14 +1,14 @@
 # Contributing to geoclear-io/trust-root
 
-> This repository is **automated infrastructure**, not a human-authored project. Most pushes here come from a dedicated GitHub App tied to the GeoClear KMS rotation pipeline; humans should generally not push directly.
+> This repository is **automated infrastructure**, not a human-authored project. Most pushes here come from a dedicated automation identity tied to GeoClear's key rotation pipeline; humans should generally not push directly.
 
 ## What pushes are accepted
 
 | Source | Accepted? | Notes |
 |---|---|---|
-| Trust-root rotation Lambda (cosign-signed) | ✅ Yes — automated | Pushes new `jwks.json` on every HSM key rotation; tags releases `vYYYY-MM-DD-rotation-N`. Append-only (never modifies or deletes existing entries). |
+| Trust-root rotation pipeline (cosign-signed) | ✅ Yes — automated | Pushes new `jwks.json` on every key rotation; tags releases `vYYYY-MM-DD-rotation-N`. Append-only (never modifies or deletes existing entries). |
 | Human PRs to `README.md` / `CONTRIBUTING.md` / `MERKLE.md` | ✅ Yes — via PR | Documentation improvements welcome. Branch protection requires PR review for non-automated paths. |
-| Human PRs to `jwks.json` / `revoked-kids.json` / `history/*` | ❌ No | These are owned by the rotation pipeline. Direct human edits would break the cryptographic chain of custody. If a key needs to be revoked manually (security incident), the rotation Lambda is the path; runbook: `geoclear/docs/runbooks/RUNBOOK-TRUST-ROOT-GITHUB-MIRROR.md`. |
+| Human PRs to `jwks.json` / `revoked-kids.json` / `history/*` | ❌ No | These are owned by the automated rotation pipeline. Direct human edits would break the cryptographic chain of custody. If a key needs to be revoked manually (security incident), the rotation pipeline is the path; coordinate via the GeoClear security channel referenced below. |
 
 ## Branch protection
 
@@ -16,8 +16,8 @@ The `main` branch is protected:
 
 - Force-push: **disabled**.
 - Required PR reviews: **1 approval** for non-automated paths.
-- Required signed commits: **enforced** (once cosign identity for the rotation Lambda is provisioned — interim period: not enforced until then).
-- Push restrictions: only the rotation Lambda's GitHub App identity may push directly to `main`; humans use PRs.
+- Required signed commits: **enforced** (once cosign identity for the rotation pipeline is provisioned — interim period: not enforced until then).
+- Push restrictions: only the rotation pipeline's automation identity may push directly to `main`; humans use PRs.
 
 ## Append-only contract
 
@@ -39,4 +39,4 @@ Do **not** open public GitHub issues for security concerns about this repo.
 
 ## Reporting non-security issues
 
-GitHub Issues are disabled on this repository because it's automated infrastructure. For questions about the verification protocol, the SDK, or how to consume this trust root, see the GeoClear documentation at [https://geoclear.io](https://geoclear.io) or the `geoclear-io/notary` SDK repo (forthcoming).
+GitHub Issues are disabled on this repository because it's automated infrastructure. For questions about the verification protocol or the SDK, see the GeoClear documentation at [https://geoclear.io](https://geoclear.io).
