@@ -1,4 +1,6 @@
 {
+  "trust_disclaimer": "A mathematically-valid ECDSA signature against any kid in this JWKS does NOT constitute production trust. Production-trust requires the closed-enum verifier profile checks specified at https://geoclear.io/docs/verifier-profile. Verifiers MUST cross-check key_purpose, environment, and trust_profile against the claimed assertion type before granting valid-production verdict.",
+  "schema_version": "2026-06-07-trust-domain-separation",
   "keys": [
     {
       "kty": "EC",
@@ -7,7 +9,40 @@
       "y": "ceciYANJFhsPbjt9z5HEICQmYmJNgVGxUR6sWNEROQU42mj87zHfkmBUtcUITHFl",
       "use": "sig",
       "alg": "ES384",
-      "kid": "geoclear-response-signing-2026"
+      "kid": "geoclear-response-signing-2026",
+      "key_purpose": "production-signed-operational-evidence",
+      "environment": "production",
+      "trust_profile": "geoclear-production-2026",
+      "status": "active",
+      "valid_endpoints": ["/api/health", "/api/demo", "/api/address", "/api/enrich", "/api/coverage", "/api/risk", "/v1/*", "/v2/*", "/mcp", "/api/admin/*"]
+    },
+    {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "lN4-l2q611nqNbE2VzMQGYJOh_-Kl2EzJE9vXacMhZKl02Rhs_au1_248cMGq5fU",
+      "y": "iw2bocieTJpBk-9guhLZpQ_T-ub2sK4qclEcOCK9waFeF3HTy3ZF8OeeJQxsu4mF",
+      "use": "sig",
+      "alg": "ES384",
+      "kid": "geoclear-demo-2026",
+      "key_purpose": "demo-public-unauthenticated-receipts",
+      "environment": "demo",
+      "trust_profile": "geoclear-demo-receipts-2026",
+      "status": "active",
+      "valid_endpoints": ["/resources/sample-bundles/*"]
+    },
+    {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "G8Fkrw-3LbXY3RT6YropN8voXayq7lpwLjeb1Njle0YAqIEtttjkd9xvSpGp4aqD",
+      "y": "OVXhkEiKrw0-VGKAqXV7wSqQXU5sDJ7JotiY9RAFJ0dBw8YJBwzjzLNU2pviFqPr",
+      "use": "sig",
+      "alg": "ES384",
+      "kid": "geoclear-vdispatch-2026",
+      "key_purpose": "demo-public-unauthenticated-vdispatch",
+      "environment": "demo",
+      "trust_profile": "geoclear-demo-vdispatch-2026",
+      "status": "active",
+      "valid_endpoints": ["/api/v-dispatch/seal"]
     }
   ]
 }
